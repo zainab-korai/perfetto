@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, X } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
-import { formatPKR } from "@/lib/products";
+import { formatPKR } from "@/lib/format";
 
 export default function CartDrawer() {
   const { items, isDrawerOpen, closeDrawer, updateQty, removeItem, subtotal } = useCart();

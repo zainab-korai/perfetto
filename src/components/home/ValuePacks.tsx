@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { getAllProducts, formatPKR } from "@/lib/products";
+import { formatPKR } from "@/lib/format";
+import type { Product } from "@/lib/types";
 
-export default function ValuePacks() {
-  const combos = getAllProducts().filter((p) => p.name.toLowerCase().includes("combo") || p.badge === "Bundle Deal");
+export default function ValuePacks({ products }: { products: Product[] }) {
+  const combos = products.filter((p) => p.name.toLowerCase().includes("combo") || p.badge === "Bundle Deal");
 
   if (combos.length === 0) return null;
 

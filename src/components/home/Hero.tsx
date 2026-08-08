@@ -5,9 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
 import { SITE } from "@/lib/site";
-import { getFeaturedProducts } from "@/lib/products";
+import type { Product } from "@/lib/types";
 
-export default function Hero() {
+export default function Hero({ featured }: { featured: Product[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
 
@@ -27,7 +27,7 @@ export default function Hero() {
     glowY.set(`${((e.clientY - rect.top) / rect.height) * 100}%`);
   }
 
-  const featured = getFeaturedProducts().slice(0, 3);
+  const heroProducts = featured.slice(0, 3);
 
   return (
     <section
@@ -104,7 +104,7 @@ export default function Hero() {
           style={{ y: yFront }}
           className="relative hidden h-[520px] w-[420px] shrink-0 lg:block"
         >
-          {featured.map((p, i) => (
+          {heroProducts.map((p, i) => (
             <motion.div
               key={p.slug}
               initial={{ opacity: 0, scale: 0.85, rotate: i % 2 === 0 ? -6 : 6 }}

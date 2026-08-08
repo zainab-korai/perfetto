@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Wallet } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
-import { formatPKR } from "@/lib/products";
+import { formatPKR } from "@/lib/format";
 import { computeShipping } from "@/lib/site";
 
 export default function CheckoutPage() {

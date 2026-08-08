@@ -1,77 +1,102 @@
-import { promises as fs } from "fs";
-import path from "path";
+import "server-only";
+import { supabase } from "./supabase";
 import type { Order } from "./types";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "orders.json");
-
-let writeQueue: Promise<unknown> = Promise.resolve();
-
-async function ensureFile() {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  try {
-    await fs.access(DATA_FILE);
-  } catch {
-    await fs.writeFile(DATA_FILE, "[]", "utf-8");
-  }
+interface OrderRow {
+  id: string;
+  created_at: string;
+  customer: Order["customer"];
+  items: Order["items"];
+  subtotal: number;
+  shipping: number;
+  total: number;
+  payment_method: Order["paymentMethod"];
+  status: Order["status"];
 }
 
-async function readAll(): Promise<Order[]> {
-  await ensureFile();
-  const raw = await fs.readFile(DATA_FILE, "utf-8");
-  try {
-    return JSON.parse(raw) as Order[];
-  } catch {
-    return [];
-  }
+function rowToOrder(row: OrderRow): Order {
+  return {
+    id: row.id,
+    createdAt: row.created_at,
+    customer: row.customer,
+    items: row.items,
+    subtotal: row.subtotal,
+    shipping: row.shipping,
+    total: row.total,
+    paymentMethod: row.payment_method,
+    status: row.status,
+  };
 }
 
-function nextId(existing: Order[]): string {
+async function nextOrderId(): Promise<string> {
   const year = new Date().getFullYear();
-  const seq = existing.length + 1;
+  const { count, error } = await supabase
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .like("id", `PF-${year}-%`);
+  if (error) throw new Error(`Failed to generate order id: ${error.message}`);
+  const seq = (count ?? 0) + 1;
   return `PF-${year}-${String(seq).padStart(4, "0")}`;
 }
 
 export async function createOrder(
   order: Omit<Order, "id" | "createdAt" | "status">
 ): Promise<Order> {
-  const task = writeQueue.then(async () => {
-    const all = await readAll();
-    const full: Order = {
-      ...order,
-      id: nextId(all),
-      createdAt: new Date().toISOString(),
-      status: "pending",
-    };
-    all.unshift(full);
-    await fs.writeFile(DATA_FILE, JSON.stringify(all, null, 2), "utf-8");
-    return full;
-  });
-  writeQueue = task.catch(() => undefined);
-  return task;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const id = await nextOrderId();
+    const { data, error } = await supabase
+      .from("orders")
+      .insert({
+        id,
+        customer: order.customer,
+        items: order.items,
+        subtotal: order.subtotal,
+        shipping: order.shipping,
+        total: order.total,
+        payment_method: order.paymentMethod,
+        status: "pending",
+      })
+      .select("*")
+      .single();
+
+    if (!error) return rowToOrder(data as OrderRow);
+    // 23505 = unique_violation (rare id collision from concurrent orders) — retry with next id
+    if (error.code !== "23505") {
+      throw new Error(`Failed to create order: ${error.message}`);
+    }
+  }
+  throw new Error("Failed to create order after multiple attempts");
 }
 
 export async function getOrders(): Promise<Order[]> {
-  return readAll();
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(`Failed to load orders: ${error.message}`);
+  return (data as OrderRow[]).map(rowToOrder);
 }
 
 export async function getOrderById(id: string): Promise<Order | undefined> {
-  const all = await readAll();
-  return all.find((o) => o.id === id);
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(`Failed to load order: ${error.message}`);
+  return data ? rowToOrder(data as OrderRow) : undefined;
 }
 
 export async function updateOrderStatus(
   id: string,
   status: Order["status"]
 ): Promise<Order | undefined> {
-  const task = writeQueue.then(async () => {
-    const all = await readAll();
-    const idx = all.findIndex((o) => o.id === id);
-    if (idx === -1) return undefined;
-    all[idx] = { ...all[idx], status };
-    await fs.writeFile(DATA_FILE, JSON.stringify(all, null, 2), "utf-8");
-    return all[idx];
-  });
-  writeQueue = task.catch(() => undefined);
-  return task;
+  const { data, error } = await supabase
+    .from("orders")
+    .update({ status })
+    .eq("id", id)
+    .select("*")
+    .maybeSingle();
+  if (error) throw new Error(`Failed to update order: ${error.message}`);
+  return data ? rowToOrder(data as OrderRow) : undefined;
 }

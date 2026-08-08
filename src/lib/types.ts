@@ -8,7 +8,19 @@ export type Category =
   | "Weight Gaining Products"
   | "New Arrivals";
 
+export const ALL_CATEGORIES: Category[] = [
+  "Weight Management",
+  "Hair Care",
+  "Skin Care",
+  "Bones & Joints",
+  "Weight Loss Products",
+  "Weight Gaining Products",
+  "New Arrivals",
+  "Immune System",
+];
+
 export interface Product {
+  id: string;
   slug: string;
   name: string;
   tagline: string;
@@ -20,9 +32,12 @@ export interface Product {
   highlights: string[];
   howToUse?: string;
   unit: string;
+  stock: number;
   featured?: boolean;
   badge?: string;
 }
+
+export type ProductInput = Omit<Product, "id">;
 
 export interface CartItem {
   slug: string;

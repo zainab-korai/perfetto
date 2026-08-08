@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { categories } from "@/lib/products";
+import { categories } from "@/lib/categories";
 import { SITE, whatsappLink } from "@/lib/site";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { FacebookIcon, InstagramIcon } from "@/components/ui/SocialIcons";

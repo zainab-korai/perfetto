@@ -9,19 +9,23 @@ import ValuePacks from "@/components/home/ValuePacks";
 import Gallery from "@/components/home/Gallery";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
 import CtaBanner from "@/components/home/CtaBanner";
+import { getAllProducts } from "@/lib/products";
 
-export default function Home() {
+export default async function Home() {
+  const products = await getAllProducts();
+  const featured = products.filter((p) => p.featured);
+
   return (
     <>
-      <Hero />
+      <Hero featured={featured} />
       <MarqueeStrip />
       <TrustBar />
-      <CategoryGrid />
-      <FeaturedProducts />
-      <Spotlight />
+      <CategoryGrid products={products} />
+      <FeaturedProducts products={products} />
+      <Spotlight featured={featured} />
       <ProcessSection />
-      <ValuePacks />
-      <Gallery />
+      <ValuePacks products={products} />
+      <Gallery products={products} />
       <WhyChooseUs />
       <CtaBanner />
     </>

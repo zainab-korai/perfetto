@@ -11,8 +11,9 @@ export const metadata: Metadata = {
   description: "Learn about Perfetto's mission to bring honest, herbal wellness solutions to families across Pakistan.",
 };
 
-export default function AboutPage() {
-  const hero = getFeaturedProducts()[0];
+export default async function AboutPage() {
+  const featured = await getFeaturedProducts();
+  const hero = featured[0];
 
   return (
     <div className="bg-[var(--color-cream)]">

@@ -4,10 +4,10 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import ProductCard from "@/components/product/ProductCard";
-import { getAllProducts } from "@/lib/products";
+import type { Product } from "@/lib/types";
 
-export default function FeaturedProducts() {
-  const products = getAllProducts().slice(0, 8);
+export default function FeaturedProducts({ products: allProducts }: { products: Product[] }) {
+  const products = allProducts.slice(0, 8);
 
   return (
     <section className="bg-[var(--color-cream-2)] py-24">

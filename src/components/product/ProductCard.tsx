@@ -6,13 +6,14 @@ import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import type { Product } from "@/lib/types";
-import { effectivePrice, formatPKR } from "@/lib/products";
+import { effectivePrice, formatPKR } from "@/lib/format";
 import { useCart } from "@/lib/cart-context";
 
 export default function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const { addItem } = useCart();
   const price = effectivePrice(product);
   const onSale = !!product.salePrice;
+  const outOfStock = product.stock <= 0;
 
   const cardRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0.5);
@@ -52,17 +53,23 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
         className="relative flex flex-col overflow-hidden rounded-2xl border border-[var(--color-sage-2)] bg-white/70 backdrop-blur-sm shadow-sm transition-shadow duration-500 hover:shadow-2xl"
       >
         <Link href={`/product/${product.slug}`} className="relative block aspect-square overflow-hidden bg-[var(--color-sage)]">
-          {(product.badge || onSale) && (
-            <span className="absolute left-3 top-3 z-10 rounded-full bg-[var(--color-forest)] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
-              {product.badge || "Sale"}
+          {outOfStock ? (
+            <span className="absolute left-3 top-3 z-10 rounded-full bg-[var(--color-ink)]/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+              Out of Stock
             </span>
+          ) : (
+            (product.badge || onSale) && (
+              <span className="absolute left-3 top-3 z-10 rounded-full bg-[var(--color-forest)] px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+                {product.badge || "Sale"}
+              </span>
+            )
           )}
           <Image
             src={product.images[0]}
             alt={product.name}
             fill
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            className={`object-cover transition-transform duration-700 ease-out group-hover:scale-110 ${outOfStock ? "opacity-60 grayscale" : ""}`}
           />
           <motion.div
             style={{
@@ -88,19 +95,21 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
                 </span>
               )}
             </div>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                addItem(
-                  { slug: product.slug, name: product.name, price, image: product.images[0] },
-                  1
-                );
-              }}
-              aria-label={`Add ${product.name} to cart`}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-forest)] text-white transition-transform hover:scale-110 hover:bg-[var(--color-gold)]"
-            >
-              <ShoppingBag size={16} />
-            </button>
+            {!outOfStock && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  addItem(
+                    { slug: product.slug, name: product.name, price, image: product.images[0] },
+                    1
+                  );
+                }}
+                aria-label={`Add ${product.name} to cart`}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-forest)] text-white transition-transform hover:scale-110 hover:bg-[var(--color-gold)]"
+              >
+                <ShoppingBag size={16} />
+              </button>
+            )}
           </div>
         </div>
       </motion.div>

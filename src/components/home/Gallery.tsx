@@ -3,18 +3,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { getAllProducts } from "@/lib/products";
+import type { Product } from "@/lib/types";
 
-export default function Gallery() {
-  const products = getAllProducts();
-  const picks = [
-    products.find((p) => p.slug === "pure-glow"),
-    products.find((p) => p.slug === "hair-supplement-plus"),
-    products.find((p) => p.slug === "heightox-60-caps"),
-    products.find((p) => p.slug === "perfetto-sleep"),
-    products.find((p) => p.slug === "charcoal-mask"),
-    products.find((p) => p.slug === "weight-loss-supplement-pro"),
-  ].filter((p): p is NonNullable<typeof p> => Boolean(p));
+const PREFERRED_SLUGS = [
+  "pure-glow",
+  "hair-supplement-plus",
+  "heightox-60-caps",
+  "perfetto-sleep",
+  "charcoal-mask",
+  "weight-loss-supplement-pro",
+];
+
+export default function Gallery({ products }: { products: Product[] }) {
+  const preferred = PREFERRED_SLUGS.map((slug) =>
+    products.find((p) => p.slug === slug)
+  ).filter((p): p is Product => Boolean(p));
+  const rest = products.filter((p) => !preferred.some((pp) => pp.slug === p.slug));
+  const picks = [...preferred, ...rest].slice(0, 6);
 
   return (
     <section className="py-24">

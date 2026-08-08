@@ -3,9 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { categories, getProductsByCategorySlug } from "@/lib/products";
+import { categories } from "@/lib/categories";
+import type { Product } from "@/lib/types";
 
-export default function CategoryGrid() {
+export default function CategoryGrid({ products }: { products: Product[] }) {
   return (
     <section className="py-24">
       <div className="container-px mx-auto max-w-7xl">
@@ -25,7 +26,7 @@ export default function CategoryGrid() {
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {categories.map((c, i) => {
-            const sample = getProductsByCategorySlug(c.slug)[0];
+            const sample = products.find((p) => p.categories.includes(c.name));
             return (
               <motion.div
                 key={c.slug}

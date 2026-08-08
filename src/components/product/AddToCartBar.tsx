@@ -10,15 +10,26 @@ export default function AddToCartBar({
   name,
   price,
   image,
+  stock,
 }: {
   slug: string;
   name: string;
   price: number;
   image: string;
+  stock: number;
 }) {
   const [qty, setQty] = useState(1);
   const { addItem } = useCart();
   const router = useRouter();
+  const outOfStock = stock <= 0;
+
+  if (outOfStock) {
+    return (
+      <div className="inline-flex items-center gap-2 rounded-full bg-[var(--color-ink)]/10 px-7 py-3.5 font-medium text-[var(--color-ink)]/50">
+        Out of Stock
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-wrap items-center gap-4">
@@ -27,7 +38,10 @@ export default function AddToCartBar({
           <Minus size={16} />
         </button>
         <span className="w-5 text-center font-medium">{qty}</span>
-        <button onClick={() => setQty((q) => q + 1)} aria-label="Increase quantity">
+        <button
+          onClick={() => setQty((q) => Math.min(stock, q + 1))}
+          aria-label="Increase quantity"
+        >
           <Plus size={16} />
         </button>
       </div>
@@ -46,6 +60,11 @@ export default function AddToCartBar({
       >
         Buy Now
       </button>
+      {stock <= 10 && (
+        <p className="w-full text-xs text-[var(--color-gold-deep)]">
+          Only {stock} left in stock
+        </p>
+      )}
     </div>
   );
 }

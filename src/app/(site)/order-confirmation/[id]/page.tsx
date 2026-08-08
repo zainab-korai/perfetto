@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { getOrderById } from "@/lib/orders";
-import { formatPKR } from "@/lib/products";
+import { formatPKR } from "@/lib/format";
 import { whatsappLink } from "@/lib/site";
 
 export default async function OrderConfirmationPage({

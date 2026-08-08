@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import ProductCard from "@/components/product/ProductCard";
-import { categories as allCategories, effectivePrice } from "@/lib/products";
+import { categories as allCategories } from "@/lib/categories";
+import { effectivePrice } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
 type SortKey = "featured" | "price-asc" | "price-desc" | "name";

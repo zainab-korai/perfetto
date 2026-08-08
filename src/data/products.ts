@@ -1,6 +1,8 @@
 import type { Product } from "@/lib/types";
 
-export const products: Product[] = [
+// Seed data only (used by scripts/seed-products.ts to populate Supabase).
+// `id` and `stock` are assigned at seed/insert time, not stored here.
+export const products: Omit<Product, "id" | "stock">[] = [
   {
     slug: "beard-oil",
     name: "Beard Oil",

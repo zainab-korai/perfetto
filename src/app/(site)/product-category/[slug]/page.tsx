@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ShopGrid from "@/components/shop/ShopGrid";
-import { categories, getAllProducts, categorySlugToName } from "@/lib/products";
+import { categories, categorySlugToName } from "@/lib/categories";
+import { getAllProducts } from "@/lib/products";
 
 export function generateStaticParams() {
   return categories.map((c) => ({ slug: c.slug }));
@@ -40,7 +41,7 @@ export default async function CategoryPage({
         <p className="mt-2 text-[var(--color-ink)]/60">{category.blurb}</p>
       </div>
       <div className="container-px mx-auto max-w-7xl py-14">
-        <ShopGrid products={getAllProducts()} initialCategorySlug={slug} />
+        <ShopGrid products={await getAllProducts()} initialCategorySlug={slug} />
       </div>
     </div>
   );

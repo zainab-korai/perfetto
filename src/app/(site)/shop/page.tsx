@@ -7,8 +7,8 @@ export const metadata: Metadata = {
   description: "Browse Perfetto's full range of herbal wellness products — weight management, hair care, skin care, and more.",
 };
 
-export default function ShopPage() {
-  const products = getAllProducts();
+export default async function ShopPage() {
+  const products = await getAllProducts();
 
   return (
     <div className="bg-[var(--color-cream)]">

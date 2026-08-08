@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, RefreshCw } from "lucide-react";
 import type { Order } from "@/lib/types";
-import { formatPKR } from "@/lib/products";
+import { formatPKR } from "@/lib/format";
 
 const STATUS_OPTIONS: Order["status"][] = [
   "pending",

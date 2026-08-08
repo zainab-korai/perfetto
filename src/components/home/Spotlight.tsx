@@ -5,14 +5,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
-import { getFeaturedProducts, effectivePrice, formatPKR } from "@/lib/products";
+import { effectivePrice, formatPKR } from "@/lib/format";
+import type { Product } from "@/lib/types";
 
-export default function Spotlight() {
+export default function Spotlight({ featured }: { featured: Product[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.15, 1, 1.1]);
 
-  const product = getFeaturedProducts()[1] ?? getFeaturedProducts()[0];
+  const product = featured[1] ?? featured[0];
   if (!product) return null;
   const price = effectivePrice(product);
 

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createOrder } from "@/lib/orders";
-import { getProductBySlug, effectivePrice } from "@/lib/products";
+import { getProductBySlug, decrementStock } from "@/lib/products";
+import { effectivePrice } from "@/lib/format";
 import { computeShipping } from "@/lib/site";
-import type { CustomerInfo, OrderItem } from "@/lib/types";
+import type { CustomerInfo, OrderItem, Product } from "@/lib/types";
 
 function isNonEmptyString(v: unknown): v is string {
   return typeof v === "string" && v.trim().length > 0;
@@ -29,11 +30,22 @@ export async function POST(req: NextRequest) {
   }
 
   const items: OrderItem[] = [];
+  const stockUpdates: { id: string; qty: number }[] = [];
+
   for (const raw of itemsInput) {
-    const product = isNonEmptyString(raw?.slug) ? getProductBySlug(raw.slug) : undefined;
     const qty = Number(raw?.qty);
-    if (!product || !Number.isFinite(qty) || qty <= 0 || qty > 50) {
+    if (!isNonEmptyString(raw?.slug) || !Number.isFinite(qty) || qty <= 0 || qty > 50) {
       return NextResponse.json({ error: "Invalid item in cart" }, { status: 400 });
+    }
+    const product: Product | undefined = await getProductBySlug(raw.slug);
+    if (!product) {
+      return NextResponse.json({ error: "Invalid item in cart" }, { status: 400 });
+    }
+    if (product.stock < qty) {
+      return NextResponse.json(
+        { error: `${product.name} only has ${product.stock} left in stock` },
+        { status: 400 }
+      );
     }
     items.push({
       slug: product.slug,
@@ -42,6 +54,7 @@ export async function POST(req: NextRequest) {
       qty: Math.floor(qty),
       image: product.images[0],
     });
+    stockUpdates.push({ id: product.id, qty: Math.floor(qty) });
   }
 
   const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
@@ -65,6 +78,8 @@ export async function POST(req: NextRequest) {
     total,
     paymentMethod: "COD",
   });
+
+  await Promise.all(stockUpdates.map((u) => decrementStock(u.id, u.qty)));
 
   return NextResponse.json({ order });
 }

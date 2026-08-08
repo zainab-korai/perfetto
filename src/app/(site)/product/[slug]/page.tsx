@@ -6,16 +6,12 @@ import ProductGallery from "@/components/product/ProductGallery";
 import AddToCartBar from "@/components/product/AddToCartBar";
 import StickyAddToCart from "@/components/product/StickyAddToCart";
 import ProductCard from "@/components/product/ProductCard";
-import {
-  getAllProducts,
-  getProductBySlug,
-  getRelatedProducts,
-  effectivePrice,
-  formatPKR,
-} from "@/lib/products";
+import { getAllProducts, getProductBySlug, getRelatedProducts } from "@/lib/products";
+import { effectivePrice, formatPKR } from "@/lib/format";
 
-export function generateStaticParams() {
-  return getAllProducts().map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  const products = await getAllProducts();
+  return products.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({
@@ -24,7 +20,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
   return { title: product ? `${product.name} — Perfetto` : "Product — Perfetto" };
 }
 
@@ -34,11 +30,12 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
   if (!product) notFound();
 
   const price = effectivePrice(product);
-  const related = getRelatedProducts(product);
+  const related = await getRelatedProducts(product);
+  const inStock = product.stock > 0;
 
   return (
     <div className="bg-[var(--color-cream)]">
@@ -55,9 +52,16 @@ export default async function ProductPage({
           <ProductGallery images={product.images} name={product.name} />
 
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">
-              {product.categories.join(" · ")}
-            </p>
+            <div className="flex items-center gap-3">
+              <p className="text-xs uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">
+                {product.categories.join(" · ")}
+              </p>
+              {!inStock && (
+                <span className="rounded-full bg-[var(--color-ink)]/10 px-2.5 py-0.5 text-[11px] font-medium uppercase text-[var(--color-ink)]/60">
+                  Out of Stock
+                </span>
+              )}
+            </div>
             <h1 className="mt-2 font-display text-4xl text-[var(--color-ink)]">{product.name}</h1>
             <p className="mt-2 text-[var(--color-ink)]/60">{product.tagline}</p>
 
@@ -94,6 +98,7 @@ export default async function ProductPage({
                 name={product.name}
                 price={price}
                 image={product.images[0]}
+                stock={product.stock}
               />
             </div>
 
@@ -133,6 +138,7 @@ export default async function ProductPage({
         name={product.name}
         price={price}
         image={product.images[0]}
+        stock={product.stock}
         triggerId="add-to-cart-trigger"
       />
     </div>

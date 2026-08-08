@@ -6,7 +6,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ShoppingBag, ChevronDown } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
-import { categories } from "@/lib/products";
+import { categories } from "@/lib/categories";
 import { whatsappLink } from "@/lib/site";
 
 const navLinks = [

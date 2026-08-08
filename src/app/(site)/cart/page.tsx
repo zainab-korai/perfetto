@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Minus, Plus, X, ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
-import { formatPKR } from "@/lib/products";
+import { formatPKR } from "@/lib/format";
 import { computeShipping } from "@/lib/site";
 
 export default function CartPage() {
