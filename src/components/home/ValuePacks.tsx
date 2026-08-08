@@ -30,7 +30,7 @@ export default function ValuePacks() {
           </p>
         </motion.div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {combos.map((c, i) => {
             const pct = c.salePrice
               ? Math.round(((c.price - c.salePrice) / c.price) * 100)

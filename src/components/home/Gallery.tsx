@@ -16,15 +16,6 @@ export default function Gallery() {
     products.find((p) => p.slug === "weight-loss-supplement-pro"),
   ].filter((p): p is NonNullable<typeof p> => Boolean(p));
 
-  const spans = [
-    "sm:row-span-2",
-    "",
-    "",
-    "sm:row-span-2",
-    "",
-    "",
-  ];
-
   return (
     <section className="py-24">
       <div className="container-px mx-auto max-w-7xl">
@@ -42,7 +33,7 @@ export default function Gallery() {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:grid-rows-2">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           {picks.map((product, i) => (
             <motion.div
               key={product.slug}
@@ -50,9 +41,9 @@ export default function Gallery() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className={`group relative overflow-hidden rounded-2xl bg-[var(--color-sage)] ${spans[i] ?? ""}`}
+              className="group relative aspect-square overflow-hidden rounded-2xl bg-[var(--color-sage)]"
             >
-              <Link href={`/product/${product.slug}`} className="block h-full min-h-[160px]">
+              <Link href={`/product/${product.slug}`} className="block h-full w-full">
                 <Image
                   src={product.images[0]}
                   alt={product.name}
