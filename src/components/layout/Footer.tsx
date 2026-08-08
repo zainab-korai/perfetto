@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { categories } from "@/lib/products";
 import { SITE, whatsappLink } from "@/lib/site";
@@ -9,9 +10,14 @@ export default function Footer() {
     <footer className="relative mt-24 overflow-hidden bg-[var(--color-forest-deep)] text-[var(--color-cream)]">
       <div className="container-px relative mx-auto grid max-w-7xl gap-12 py-16 md:grid-cols-4">
         <div>
-          <p className="font-display text-2xl text-white">
-            Perfetto<span className="text-[var(--color-gold-light)]">.</span>
-          </p>
+          <div className="flex items-center gap-2.5">
+            <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-white/10">
+              <Image src="/logo.webp" alt="Perfetto" fill sizes="40px" className="object-contain p-1" />
+            </span>
+            <p className="font-display text-2xl text-white">
+              Perfetto<span className="text-[var(--color-gold-light)]">.</span>
+            </p>
+          </div>
           <p className="mt-4 max-w-xs text-sm text-white/60">
             Herbal wellness formulated for real concerns — trusted by{" "}
             {SITE.familiesServed} families across Pakistan for {SITE.yearsInBusiness} years.

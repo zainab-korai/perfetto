@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   title: "Perfetto — Herbal Wellness, Perfected",
   description:
     "Perfetto is Pakistan's trusted herbal wellness brand — carefully crafted, chemical-free solutions for weight management, hair, skin, height and more. Trusted by 15,000+ families. Cash on delivery nationwide.",
+  icons: {
+    icon: "/logo.webp",
+    shortcut: "/logo.webp",
+    apple: "/logo.webp",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -4,11 +4,56 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
-  useMemo,
   useState,
+  useSyncExternalStore,
 } from "react";
 import type { CartItem } from "./types";
+
+const STORAGE_KEY = "perfetto_cart_v1";
+const EMPTY_ITEMS: CartItem[] = [];
+
+let cartItems: CartItem[] = EMPTY_ITEMS;
+const listeners = new Set<() => void>();
+
+function readFromStorage(): CartItem[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as CartItem[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function persist() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
+  } catch {
+    // storage unavailable — ignore
+  }
+}
+
+function setCartItems(updater: (prev: CartItem[]) => CartItem[]) {
+  cartItems = updater(cartItems);
+  persist();
+  listeners.forEach((l) => l());
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+function getSnapshot() {
+  return cartItems;
+}
+
+function getServerSnapshot() {
+  return EMPTY_ITEMS;
+}
+
+if (typeof window !== "undefined") {
+  cartItems = readFromStorage();
+}
 
 interface CartContextValue {
   items: CartItem[];
@@ -24,30 +69,13 @@ interface CartContextValue {
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
-const STORAGE_KEY = "perfetto_cart_v1";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const items = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setItems(JSON.parse(raw));
-    } catch {
-      // ignore corrupt storage
-    }
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items, hydrated]);
 
   const addItem = useCallback((item: Omit<CartItem, "qty">, qty = 1) => {
-    setItems((prev) => {
+    setCartItems((prev) => {
       const existing = prev.find((i) => i.slug === item.slug);
       if (existing) {
         return prev.map((i) =>
@@ -60,24 +88,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const removeItem = useCallback((slug: string) => {
-    setItems((prev) => prev.filter((i) => i.slug !== slug));
+    setCartItems((prev) => prev.filter((i) => i.slug !== slug));
   }, []);
 
   const updateQty = useCallback((slug: string, qty: number) => {
-    setItems((prev) =>
+    setCartItems((prev) =>
       qty <= 0
         ? prev.filter((i) => i.slug !== slug)
         : prev.map((i) => (i.slug === slug ? { ...i, qty } : i))
     );
   }, []);
 
-  const clearCart = useCallback(() => setItems([]), []);
+  const clearCart = useCallback(() => setCartItems(() => []), []);
 
-  const subtotal = useMemo(
-    () => items.reduce((sum, i) => sum + i.price * i.qty, 0),
-    [items]
-  );
-  const count = useMemo(() => items.reduce((sum, i) => sum + i.qty, 0), [items]);
+  const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  const count = items.reduce((sum, i) => sum + i.qty, 0);
 
   const value: CartContextValue = {
     items,

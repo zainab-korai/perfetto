@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
 import { SITE } from "@/lib/site";
 import { getFeaturedProducts } from "@/lib/products";
 
@@ -15,12 +15,37 @@ export default function Hero() {
   const yFront = useTransform(scrollYProgress, [0, 1], ["0%", "60%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
+  const glowX = useMotionValue("50%");
+  const glowY = useMotionValue("40%");
+  const springGlowX = useSpring(glowX, { stiffness: 60, damping: 20 });
+  const springGlowY = useSpring(glowY, { stiffness: 60, damping: 20 });
+
+  function onMouseMove(e: React.MouseEvent<HTMLElement>) {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    glowX.set(`${((e.clientX - rect.left) / rect.width) * 100}%`);
+    glowY.set(`${((e.clientY - rect.top) / rect.height) * 100}%`);
+  }
+
   const featured = getFeaturedProducts().slice(0, 3);
 
   return (
-    <section ref={ref} className="relative h-[92vh] min-h-[640px] overflow-hidden bg-[var(--color-forest-deep)]">
+    <section
+      ref={ref}
+      onMouseMove={onMouseMove}
+      className="relative h-[92vh] min-h-[640px] overflow-hidden bg-[var(--color-forest-deep)]"
+    >
       <motion.div style={{ y: yBg }} className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(201,162,39,0.25),transparent_45%),radial-gradient(circle_at_80%_70%,rgba(20,80,60,0.5),transparent_50%)]" />
+        <motion.div
+          style={{
+            background: useTransform(
+              [springGlowX, springGlowY],
+              ([x, y]) => `radial-gradient(500px circle at ${x} ${y}, rgba(201,162,39,0.18), transparent 70%)`
+            ),
+          }}
+          className="absolute inset-0 hidden lg:block"
+        />
         <div className="grain absolute inset-0" />
       </motion.div>
 

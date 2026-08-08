@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Leaf, Truck, Wallet, Check } from "lucide-react";
 import ProductGallery from "@/components/product/ProductGallery";
 import AddToCartBar from "@/components/product/AddToCartBar";
+import StickyAddToCart from "@/components/product/StickyAddToCart";
 import ProductCard from "@/components/product/ProductCard";
 import {
   getAllProducts,
@@ -87,7 +88,7 @@ export default async function ProductPage({
               </ul>
             )}
 
-            <div className="mt-8">
+            <div id="add-to-cart-trigger" className="mt-8">
               <AddToCartBar
                 slug={product.slug}
                 name={product.name}
@@ -126,6 +127,14 @@ export default async function ProductPage({
           </div>
         )}
       </div>
+
+      <StickyAddToCart
+        slug={product.slug}
+        name={product.name}
+        price={price}
+        image={product.images[0]}
+        triggerId="add-to-cart-trigger"
+      />
     </div>
   );
 }

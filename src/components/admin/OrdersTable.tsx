@@ -63,7 +63,7 @@ export default function OrdersTable({ initialOrders }: { initialOrders: Order[] 
 
   return (
     <div>
-      <div className="mb-8 grid grid-cols-3 gap-4">
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-2xl border border-[var(--color-sage-2)] bg-white p-5">
           <p className="text-xs uppercase tracking-wider text-[var(--color-ink)]/50">Total Orders</p>
           <p className="mt-1 font-display text-3xl text-[var(--color-ink)]">{stats.total}</p>
@@ -116,8 +116,8 @@ export default function OrdersTable({ initialOrders }: { initialOrders: Order[] 
       {filtered.length === 0 ? (
         <p className="py-20 text-center text-[var(--color-ink)]/50">No orders yet.</p>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-[var(--color-sage-2)] bg-white">
-          <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto rounded-2xl border border-[var(--color-sage-2)] bg-white">
+          <table className="w-full min-w-[720px] text-left text-sm">
             <thead className="bg-[var(--color-sage)]/50 text-xs uppercase tracking-wider text-[var(--color-ink)]/50">
               <tr>
                 <th className="px-5 py-3">Order</th>
@@ -252,8 +252,8 @@ function FragmentRow({
                         <span>{formatPKR(order.subtotal)}</span>
                       </div>
                       <div className="flex justify-between text-[var(--color-ink)]/60">
-                        <span>Shipping</span>
-                        <span>{order.shipping === 0 ? "Free" : formatPKR(order.shipping)}</span>
+                        <span>Delivery Charges</span>
+                        <span>{formatPKR(order.shipping)}</span>
                       </div>
                       <div className="flex justify-between font-semibold text-[var(--color-ink)]">
                         <span>Total</span>

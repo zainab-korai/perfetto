@@ -47,8 +47,8 @@ export default async function OrderConfirmationPage({
             <span>{formatPKR(order.subtotal)}</span>
           </div>
           <div className="flex justify-between text-[var(--color-ink)]/70">
-            <span>Shipping</span>
-            <span>{order.shipping === 0 ? "Free" : formatPKR(order.shipping)}</span>
+            <span>Delivery Charges</span>
+            <span>{formatPKR(order.shipping)}</span>
           </div>
           <div className="flex justify-between border-t border-[var(--color-sage-2)] pt-2 text-base font-semibold text-[var(--color-ink)]">
             <span>Total</span>

@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
   }
 
   const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-  const shipping = computeShipping(subtotal);
+  const shipping = computeShipping();
   const total = subtotal + shipping;
 
   const customer: CustomerInfo = {

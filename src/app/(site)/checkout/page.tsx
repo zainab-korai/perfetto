@@ -23,7 +23,7 @@ export default function CheckoutPage() {
     notes: "",
   });
 
-  const shipping = computeShipping(subtotal);
+  const shipping = computeShipping();
   const total = subtotal + shipping;
 
   if (items.length === 0) {
@@ -181,8 +181,8 @@ export default function CheckoutPage() {
               <span>{formatPKR(subtotal)}</span>
             </div>
             <div className="flex justify-between text-[var(--color-ink)]/70">
-              <span>Shipping</span>
-              <span>{shipping === 0 ? "Free" : formatPKR(shipping)}</span>
+              <span>Delivery Charges</span>
+              <span>{formatPKR(shipping)}</span>
             </div>
             <div className="flex justify-between border-t border-[var(--color-sage-2)] pt-2 text-base font-semibold text-[var(--color-ink)]">
               <span>Total</span>

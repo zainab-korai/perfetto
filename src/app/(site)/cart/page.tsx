@@ -6,9 +6,11 @@ import { motion } from "framer-motion";
 import { Minus, Plus, X, ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPKR } from "@/lib/products";
+import { computeShipping } from "@/lib/site";
 
 export default function CartPage() {
   const { items, updateQty, removeItem, subtotal } = useCart();
+  const shipping = computeShipping();
 
   if (items.length === 0) {
     return (
@@ -83,12 +85,12 @@ export default function CartPage() {
             <span>{formatPKR(subtotal)}</span>
           </div>
           <div className="mt-2 flex justify-between text-sm text-[var(--color-ink)]/70">
-            <span>Shipping</span>
-            <span>Calculated at checkout</span>
+            <span>Delivery Charges</span>
+            <span>{formatPKR(shipping)}</span>
           </div>
           <div className="mt-4 flex justify-between border-t border-[var(--color-sage-2)] pt-4 text-lg font-semibold text-[var(--color-ink)]">
             <span>Total</span>
-            <span>{formatPKR(subtotal)}</span>
+            <span>{formatPKR(subtotal + shipping)}</span>
           </div>
           <Link
             href="/checkout"

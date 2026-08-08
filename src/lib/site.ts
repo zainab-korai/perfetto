@@ -14,9 +14,8 @@ export function whatsappLink(message?: string) {
   return message ? `${base}?text=${encodeURIComponent(message)}` : base;
 }
 
-export const FREE_SHIPPING_THRESHOLD = 5000;
-export const FLAT_SHIPPING = 200;
+export const FLAT_SHIPPING = 250;
 
-export function computeShipping(subtotal: number): number {
-  return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING;
+export function computeShipping(): number {
+  return FLAT_SHIPPING;
 }
