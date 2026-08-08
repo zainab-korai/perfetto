@@ -1,0 +1,22 @@
+export const SITE = {
+  name: "Perfetto",
+  tagline: "Herbal Wellness, Perfected",
+  whatsappNumber: "923200776615",
+  whatsappDisplay: "+92 320 077 6615",
+  facebook: "https://www.facebook.com/share/18SCFPMqTt/",
+  instagram: "https://www.instagram.com/perfetto.pk",
+  familiesServed: "15,000+",
+  yearsInBusiness: "5+",
+};
+
+export function whatsappLink(message?: string) {
+  const base = `https://wa.me/${SITE.whatsappNumber}`;
+  return message ? `${base}?text=${encodeURIComponent(message)}` : base;
+}
+
+export const FREE_SHIPPING_THRESHOLD = 5000;
+export const FLAT_SHIPPING = 200;
+
+export function computeShipping(subtotal: number): number {
+  return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING;
+}
