@@ -6,9 +6,12 @@ import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
 import { FacebookIcon, InstagramIcon } from "@/components/ui/SocialIcons";
 
 export default function Footer() {
+  const social =
+    "flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors hover:bg-white/10";
+
   return (
-    <footer className="relative mt-24 overflow-hidden bg-[var(--color-forest-deep)] text-[var(--color-cream)]">
-      <div className="container-px relative mx-auto grid max-w-7xl gap-12 py-16 md:grid-cols-4">
+    <footer className="mt-20 bg-[var(--color-forest-deep)] text-[var(--color-cream)]">
+      <div className="container-px mx-auto grid max-w-7xl gap-12 py-16 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-2.5">
             <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-white/10">
@@ -19,33 +22,21 @@ export default function Footer() {
             </p>
           </div>
           <p className="mt-4 max-w-xs text-sm text-white/60">
-            Herbal wellness formulated for real concerns — trusted by{" "}
-            {SITE.familiesServed} families across Pakistan for {SITE.yearsInBusiness} years.
+            Herbal wellness formulated for real concerns, trusted by {SITE.familiesServed} families
+            across Pakistan for {SITE.yearsInBusiness} years.
           </p>
           <div className="mt-6 flex gap-3">
-            <a
-              href={SITE.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 hover:bg-white/10"
-              aria-label="Facebook"
-            >
+            <a href={SITE.facebook} target="_blank" rel="noopener noreferrer" className={social} aria-label="Facebook">
               <FacebookIcon size={16} />
             </a>
-            <a
-              href={SITE.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 hover:bg-white/10"
-              aria-label="Instagram"
-            >
+            <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" className={social} aria-label="Instagram">
               <InstagramIcon size={16} />
             </a>
             <a
               href={whatsappLink("Hi Perfetto, I have a question about your products.")}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 hover:bg-white/10"
+              className={social}
               aria-label="WhatsApp"
             >
               <WhatsAppIcon size={16} />
@@ -84,7 +75,7 @@ export default function Footer() {
                 WhatsApp: {SITE.whatsappDisplay}
               </a>
             </li>
-            <li className="text-white/50">Cash on Delivery — all across Pakistan</li>
+            <li className="text-white/50">Cash on Delivery, all across Pakistan</li>
           </ul>
         </div>
       </div>
