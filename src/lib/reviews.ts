@@ -2,11 +2,18 @@ export type Review = {
   name: string;
   city: string;
   product?: string;
-  text?: string; // customer ne jo likha
-  image?: string; // WhatsApp screenshot, file public/reviews/ folder mein rakho
+  text: string; // customer ne jo likha (ijazat ke saath)
 };
 
-export const REVIEWS: Review[] = [
-  { name: "Ali", city: "Karachi", image: "/reviews/1.jpg" },
-  { name: "Ayesha", city: "Lahore", product: "Hair Oil", text: "Customer ka asli likha hua message" },
-];
+/* ==========================================================
+   SIRF ASLI REVIEWS yahan daalo, customer ki ijazat se.
+   List khali ho to homepage pe reviews section nahi dikhta.
+
+   Customer se jo asli message mile, wohi yahan paste karo:
+
+   export const REVIEWS: Review[] = [
+     { name: "Customer ka naam", city: "Shehar", product: "Product ka naam", text: "Unka likha hua message" },
+     { name: "Dusra naam", city: "Shehar", text: "Unka likha hua message" },
+   ];
+   ========================================================== */
+export const REVIEWS: Review[] = [];
