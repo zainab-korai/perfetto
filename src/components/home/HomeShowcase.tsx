@@ -3,9 +3,10 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ShoppingBag } from "lucide-react";
+import { ArrowRight, ShoppingBag, Star } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPKR } from "@/lib/format";
+import CategoryIcon, { TILE_BG } from "@/components/ui/CategoryIcon";
 
 export interface ShowcaseProduct {
   slug: string;
@@ -54,22 +55,37 @@ export default function HomeShowcase({
   const viewAllHref = active === "best" ? "/shop" : `/product-category/${active}`;
 
   const pill = (isActive: boolean) =>
-    `shrink-0 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors ${
+    `flex shrink-0 items-center gap-2 rounded-full border py-2 pl-2 pr-5 text-sm font-medium transition-all duration-200 ${
       isActive
-        ? "border-[var(--color-forest)] bg-[var(--color-forest)] text-white"
-        : "border-[var(--color-sage-2)] bg-white text-[var(--color-ink)] hover:border-[var(--color-forest)]"
+        ? "border-[var(--color-forest)] bg-[var(--color-forest)] text-white shadow-md"
+        : "border-[var(--color-sage-2)] bg-white text-[var(--color-ink)] hover:-translate-y-0.5 hover:border-[var(--color-forest)]"
     }`;
 
   return (
     <div>
       {/* Tabs */}
-      <div className="-mx-5 overflow-x-auto px-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:px-0">
+      <div className="-mx-5 overflow-x-auto px-5 py-1 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
         <div className="flex gap-2 sm:flex-wrap">
           <button onClick={() => setActive("best")} className={pill(active === "best")}>
+            <span
+              className={`flex h-8 w-8 items-center justify-center rounded-full transition-transform ${
+                active === "best" ? "scale-110 bg-[var(--color-gold)]" : "bg-[#FFF1BF]"
+              }`}
+            >
+              <Star size={16} className="fill-[#F6B300] text-[#B7860B]" />
+            </span>
             Best Sellers
           </button>
           {visibleTabs.map((t) => (
             <button key={t.slug} onClick={() => setActive(t.slug)} className={pill(active === t.slug)}>
+              <span
+                className={`flex h-8 w-8 items-center justify-center rounded-full transition-transform ${
+                  active === t.slug ? "scale-110" : ""
+                }`}
+                style={{ backgroundColor: active === t.slug ? "#fff" : TILE_BG[t.slug] ?? "#E7EFE4" }}
+              >
+                <CategoryIcon slug={t.slug} className="h-5 w-5" />
+              </span>
               {t.name}
             </button>
           ))}
@@ -88,7 +104,7 @@ export default function HomeShowcase({
           return (
             <div
               key={p.slug}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--color-sage-2)] bg-white transition-shadow duration-300 hover:shadow-xl"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-[var(--color-sage-2)] bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
             >
               <Link href={`/product/${p.slug}`} className="relative block aspect-square overflow-hidden bg-[var(--color-sage)]">
                 {out ? (
