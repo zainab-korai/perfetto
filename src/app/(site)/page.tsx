@@ -112,28 +112,29 @@ export default async function Home() {
     { n: "3", title: "Pay on delivery", text: "Receive your parcel at home and pay the rider." },
   ];
 
+  const h2 = "font-display mt-2 text-2xl text-[var(--color-ink)] sm:text-4xl";
+
   return (
     <>
       {/* ================= HERO ================= */}
       <section className="relative overflow-hidden bg-[var(--color-forest-deep)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_15%,rgba(201,162,39,0.2),transparent_42%),radial-gradient(circle_at_88%_80%,rgba(20,80,60,0.6),transparent_50%)]" />
-        {/* Tairte hue glow blobs */}
-        <div className="animate-blob pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-[var(--color-gold)]/20 blur-3xl" />
+        <div className="animate-blob pointer-events-none absolute -left-24 top-10 h-60 w-60 rounded-full bg-[var(--color-gold)]/20 blur-3xl sm:h-72 sm:w-72" />
         <div
-          className="animate-blob pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-emerald-400/15 blur-3xl"
+          className="animate-blob pointer-events-none absolute -right-20 bottom-0 h-64 w-64 rounded-full bg-emerald-400/15 blur-3xl sm:h-80 sm:w-80"
           style={{ animationDelay: "-6s" }}
         />
 
-        <div className="container-px relative mx-auto grid max-w-7xl items-center gap-10 pb-20 pt-14 sm:pt-20 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="container-px relative mx-auto grid max-w-7xl items-center gap-8 pb-12 pt-10 sm:gap-10 sm:pb-20 sm:pt-20 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="text-center lg:text-left">
             <p
-              className="hero-in mb-5 inline-block rounded-full border border-[var(--color-gold)]/40 bg-white/5 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-[var(--color-gold-light)]"
+              className="hero-in mb-4 inline-block rounded-full border border-[var(--color-gold)]/40 bg-white/5 px-3.5 py-1.5 text-[10px] uppercase tracking-[0.18em] text-[var(--color-gold-light)] sm:mb-5 sm:px-4 sm:text-xs sm:tracking-[0.2em]"
               style={{ animationDelay: "100ms" }}
             >
               Trusted by {SITE.familiesServed} Families
             </p>
             <h1
-              className="hero-in font-display text-5xl leading-[1.05] text-white sm:text-6xl lg:text-7xl"
+              className="hero-in font-display text-[2.6rem] leading-[1.05] text-white sm:text-6xl lg:text-7xl"
               style={{ animationDelay: "250ms" }}
             >
               Herbal Wellness,
@@ -141,19 +142,19 @@ export default async function Home() {
               <span className="shimmer-text italic">Perfected.</span>
             </h1>
             <p
-              className="hero-in mx-auto mt-6 max-w-md text-lg text-white/70 lg:mx-0"
+              className="hero-in mx-auto mt-4 max-w-md text-base text-white/70 sm:mt-6 sm:text-lg lg:mx-0"
               style={{ animationDelay: "420ms" }}
             >
               Chemical-free herbal formulas for weight, hair, skin, height and more, made for real
               concerns.
             </p>
             <div
-              className="hero-in mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start"
+              className="hero-in mt-7 flex flex-col items-stretch gap-3 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4 lg:justify-start"
               style={{ animationDelay: "580ms" }}
             >
               <Link
                 href="/shop"
-                className="btn-gold pulse-ring rounded-full bg-[var(--color-gold)] px-8 py-4 font-medium text-[var(--color-forest-deep)] transition-transform hover:-translate-y-0.5"
+                className="btn-gold pulse-ring rounded-full bg-[var(--color-gold)] px-8 py-4 text-center font-medium text-[var(--color-forest-deep)] transition-transform hover:-translate-y-0.5"
               >
                 Shop Now
               </Link>
@@ -161,16 +162,46 @@ export default async function Home() {
                 href={whatsappLink("Hi Perfetto! I'd like some advice on which product to choose.")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-full border border-white/25 px-8 py-4 font-medium text-white transition-colors hover:bg-white/10"
+                className="flex items-center justify-center gap-2 rounded-full border border-white/25 px-8 py-4 font-medium text-white transition-colors hover:bg-white/10"
               >
                 <MessageCircle size={18} /> Ask on WhatsApp
               </a>
             </div>
+
+            {/* Mobile pe products ki row */}
+            {heroProducts.length > 0 && (
+              <div
+                className="hero-in mx-auto mt-9 grid max-w-sm grid-cols-3 gap-3 lg:hidden"
+                style={{ animationDelay: "720ms" }}
+              >
+                {heroProducts.map((p, i) => (
+                  <Link
+                    key={p.slug}
+                    href={`/product/${p.slug}`}
+                    className={`relative block overflow-hidden rounded-2xl border border-white/15 bg-white/10 shadow-xl ${
+                      i === 1 ? "-translate-y-3" : ""
+                    }`}
+                  >
+                    <div className="relative aspect-[3/4]">
+                      {p.images[0] && (
+                        <Image src={p.images[0]} alt={p.name} fill sizes="120px" className="object-cover" />
+                      )}
+                    </div>
+                    <p className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/80 to-transparent px-1.5 pb-1.5 pt-6 text-center text-[10px] font-medium text-white">
+                      {p.name}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product fan + floating chips (sirf bade screen pe) */}
           {heroProducts.length > 0 && (
-            <div className="hero-in relative mx-auto hidden h-[430px] w-full max-w-[460px] lg:block" style={{ animationDelay: "500ms" }}>
+            <div
+              className="hero-in relative mx-auto hidden h-[430px] w-full max-w-[460px] lg:block"
+              style={{ animationDelay: "500ms" }}
+            >
               {heroProducts.map((p, i) => {
                 const pos = [
                   "left-[2%] top-[16%] -rotate-6 z-10",
@@ -219,7 +250,7 @@ export default async function Home() {
           {[...MARQUEE, ...MARQUEE].map((m, i) => (
             <span
               key={i}
-              className="mx-6 flex items-center gap-3 whitespace-nowrap text-sm tracking-wide text-white/70"
+              className="mx-5 flex items-center gap-3 whitespace-nowrap text-xs tracking-wide text-white/70 sm:mx-6 sm:text-sm"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-gold)]" />
               {m}
@@ -229,13 +260,11 @@ export default async function Home() {
       </div>
 
       {/* ============ SHOP BY CONCERN (ICON GRID) ============ */}
-      <section className="container-px mx-auto max-w-7xl pt-16">
+      <section className="container-px mx-auto max-w-7xl pt-12 sm:pt-16">
         <Reveal>
-          <div className="mb-10 text-center">
+          <div className="mb-8 text-center sm:mb-10">
             <Eyebrow>Shop by Concern</Eyebrow>
-            <h2 className="font-display mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
-              Find What Your Body Needs
-            </h2>
+            <h2 className={h2}>Find What Your Body Needs</h2>
           </div>
         </Reveal>
         <Reveal delay={100} variant="scale">
@@ -244,17 +273,17 @@ export default async function Home() {
       </section>
 
       {/* ================= TRUST ================= */}
-      <section className="container-px mx-auto max-w-7xl pt-14">
+      <section className="container-px mx-auto max-w-7xl pt-10 sm:pt-14">
         <Reveal>
-          <div className="grid grid-cols-2 gap-5 rounded-3xl border border-[var(--color-sage-2)] bg-white p-6 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 rounded-3xl border border-[var(--color-sage-2)] bg-white p-4 sm:gap-5 sm:p-6 lg:grid-cols-4">
             {trust.map(({ icon: Icon, title, text }) => (
-              <div key={title} className="flex items-center gap-3">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--color-sage)] text-[var(--color-forest)]">
-                  <Icon size={20} />
+              <div key={title} className="flex items-center gap-2.5 sm:gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-sage)] text-[var(--color-forest)] sm:h-11 sm:w-11">
+                  <Icon size={18} />
                 </span>
-                <div>
-                  <p className="text-sm font-semibold text-[var(--color-ink)]">{title}</p>
-                  <p className="text-xs text-[var(--color-ink)]/55">{text}</p>
+                <div className="min-w-0">
+                  <p className="text-[13px] font-semibold leading-tight text-[var(--color-ink)] sm:text-sm">{title}</p>
+                  <p className="text-[11px] text-[var(--color-ink)]/55 sm:text-xs">{text}</p>
                 </div>
               </div>
             ))}
@@ -263,12 +292,10 @@ export default async function Home() {
       </section>
 
       {/* ============ PRODUCTS WITH TABS ============ */}
-      <section className="container-px mx-auto max-w-7xl pt-20">
+      <section className="container-px mx-auto max-w-7xl pt-14 sm:pt-20">
         <Reveal>
           <Eyebrow>Browse Products</Eyebrow>
-          <h2 className="font-display mb-8 mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
-            Best Sellers & More
-          </h2>
+          <h2 className={`${h2} mb-6 sm:mb-8`}>Best Sellers & More</h2>
         </Reveal>
         <Reveal delay={100}>
           <HomeShowcase products={slim} tabs={tabs} />
@@ -282,27 +309,25 @@ export default async function Home() {
 
       {/* ================= BUNDLES ================= */}
       {bundles.length > 0 && (
-        <section className="bg-[var(--color-sage)] py-16">
+        <section className="bg-[var(--color-sage)] py-12 sm:py-16">
           <div className="container-px mx-auto max-w-7xl">
             <Reveal>
               <Eyebrow>Best Value</Eyebrow>
-              <h2 className="font-display mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
-                Bundles & Courses, Bigger Savings
-              </h2>
-              <p className="mt-2 max-w-xl text-[var(--color-ink)]/60">
+              <h2 className={h2}>Bundles & Courses, Bigger Savings</h2>
+              <p className="mt-2 max-w-xl text-sm text-[var(--color-ink)]/60 sm:text-base">
                 Complete courses at a special price. The smart way to stay consistent.
               </p>
             </Reveal>
 
-            <div className="-mx-5 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
+            <div className="-mx-5 mt-6 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-4 [scrollbar-width:none] sm:mx-0 sm:mt-8 sm:gap-4 sm:px-0 [&::-webkit-scrollbar]:hidden">
               {bundles.map((p) => (
                 <Link
                   key={p.slug}
                   href={`/product/${p.slug}`}
-                  className="group w-[260px] shrink-0 snap-start overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl sm:w-[280px]"
+                  className="group w-[220px] shrink-0 snap-start overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl sm:w-[280px]"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-[var(--color-cream-2)]">
-                    <span className="absolute left-3 top-3 z-10 rounded-full bg-[var(--color-forest)] px-3 py-1 text-[11px] font-bold uppercase text-white">
+                    <span className="absolute left-2.5 top-2.5 z-10 rounded-full bg-[var(--color-forest)] px-2.5 py-1 text-[10px] font-bold uppercase text-white sm:left-3 sm:top-3 sm:px-3 sm:text-[11px]">
                       Save {formatPKR(p.price - p.salePrice!)}
                     </span>
                     {p.images[0] && (
@@ -315,13 +340,15 @@ export default async function Home() {
                       />
                     )}
                   </div>
-                  <div className="p-4">
-                    <h3 className="font-display text-lg leading-tight text-[var(--color-ink)]">{p.name}</h3>
+                  <div className="p-3.5 sm:p-4">
+                    <h3 className="font-display line-clamp-2 text-base leading-tight text-[var(--color-ink)] sm:text-lg">
+                      {p.name}
+                    </h3>
                     <div className="mt-2 flex items-baseline gap-2">
-                      <span className="text-lg font-semibold text-[var(--color-forest)]">
+                      <span className="text-base font-semibold text-[var(--color-forest)] sm:text-lg">
                         {formatPKR(effectivePrice(p))}
                       </span>
-                      <span className="text-sm text-[var(--color-ink)]/40 line-through">
+                      <span className="text-xs text-[var(--color-ink)]/40 line-through sm:text-sm">
                         {formatPKR(p.price)}
                       </span>
                     </div>
@@ -334,17 +361,17 @@ export default async function Home() {
       )}
 
       {/* ============== COUNTING NUMBERS ============== */}
-      <section className="container-px mx-auto max-w-7xl pt-20">
+      <section className="container-px mx-auto max-w-7xl pt-14 sm:pt-20">
         <Reveal variant="scale">
-          <div className="relative overflow-hidden rounded-3xl bg-[var(--color-forest)] px-6 py-12 sm:px-12">
+          <div className="relative overflow-hidden rounded-3xl bg-[var(--color-forest)] px-5 py-10 sm:px-12 sm:py-12">
             <div className="animate-blob pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-[var(--color-gold)]/20 blur-3xl" />
-            <div className="relative grid grid-cols-2 gap-8 text-center lg:grid-cols-4">
+            <div className="relative grid grid-cols-2 gap-6 text-center sm:gap-8 lg:grid-cols-4">
               {stats.map((s) => (
                 <div key={s.label}>
-                  <p className="font-display text-4xl text-[var(--color-gold-light)] sm:text-5xl">
+                  <p className="font-display text-3xl text-[var(--color-gold-light)] sm:text-5xl">
                     <CountUp end={s.end} suffix={s.suffix} />
                   </p>
-                  <p className="mt-2 text-sm text-white/70">{s.label}</p>
+                  <p className="mt-1.5 text-xs text-white/70 sm:mt-2 sm:text-sm">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -353,22 +380,20 @@ export default async function Home() {
       </section>
 
       {/* ============== HOW TO ORDER ============== */}
-      <section className="container-px mx-auto max-w-7xl pt-20">
+      <section className="container-px mx-auto max-w-7xl pt-14 sm:pt-20">
         <Reveal>
           <Eyebrow>Easy Ordering</Eyebrow>
-          <h2 className="font-display mb-8 mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
-            Order in 3 Simple Steps
-          </h2>
+          <h2 className={`${h2} mb-6 sm:mb-8`}>Order in 3 Simple Steps</h2>
         </Reveal>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
           {steps.map((s, i) => (
             <Reveal key={s.n} delay={i * 140}>
-              <div className="flex h-full items-start gap-4 rounded-2xl border border-[var(--color-sage-2)] bg-white p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
-                <span className="font-display flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-forest)] text-xl text-[var(--color-gold-light)]">
+              <div className="flex h-full items-start gap-4 rounded-2xl border border-[var(--color-sage-2)] bg-white p-5 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg sm:p-6">
+                <span className="font-display flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--color-forest)] text-lg text-[var(--color-gold-light)] sm:h-12 sm:w-12 sm:text-xl">
                   {s.n}
                 </span>
                 <div>
-                  <h3 className="font-display text-lg text-[var(--color-ink)]">{s.title}</h3>
+                  <h3 className="font-display text-base text-[var(--color-ink)] sm:text-lg">{s.title}</h3>
                   <p className="mt-1 text-sm text-[var(--color-ink)]/60">{s.text}</p>
                 </div>
               </div>
@@ -381,18 +406,18 @@ export default async function Home() {
       <ReviewsSection />
 
       {/* ================= FAQ ================= */}
-      <section className="container-px mx-auto max-w-3xl pt-20">
+      <section className="container-px mx-auto max-w-3xl pt-14 sm:pt-20">
         <Reveal>
-          <div className="mb-8 text-center">
+          <div className="mb-6 text-center sm:mb-8">
             <Eyebrow>Good to Know</Eyebrow>
-            <h2 className="font-display mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">Common Questions</h2>
+            <h2 className={h2}>Common Questions</h2>
           </div>
         </Reveal>
-        <div className="space-y-3">
+        <div className="space-y-2.5 sm:space-y-3">
           {FAQS.map((f, i) => (
             <Reveal key={f.q} delay={i * 80}>
-              <details className="group rounded-2xl border border-[var(--color-sage-2)] bg-white px-5 py-4 transition-shadow open:shadow-md">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-[var(--color-ink)] [&::-webkit-details-marker]:hidden">
+              <details className="group rounded-2xl border border-[var(--color-sage-2)] bg-white px-4 py-3.5 transition-shadow open:shadow-md sm:px-5 sm:py-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium text-[var(--color-ink)] sm:text-base [&::-webkit-details-marker]:hidden">
                   {f.q}
                   <ChevronDown
                     size={18}
@@ -407,22 +432,22 @@ export default async function Home() {
       </section>
 
       {/* ================= FINAL CTA ================= */}
-      <section className="container-px mx-auto mt-20 max-w-7xl">
+      <section className="container-px mx-auto mt-14 max-w-7xl sm:mt-20">
         <Reveal variant="scale">
-          <div className="relative overflow-hidden rounded-3xl bg-[var(--color-forest-deep)] px-6 py-16 text-center sm:px-12">
+          <div className="relative overflow-hidden rounded-3xl bg-[var(--color-forest-deep)] px-5 py-12 text-center sm:px-12 sm:py-16">
             <div className="animate-blob pointer-events-none absolute -left-10 top-0 h-60 w-60 rounded-full bg-[var(--color-gold)]/20 blur-3xl" />
             <div
               className="animate-blob pointer-events-none absolute -right-10 bottom-0 h-60 w-60 rounded-full bg-emerald-400/15 blur-3xl"
               style={{ animationDelay: "-7s" }}
             />
             <div className="relative">
-              <h2 className="font-display text-3xl text-white sm:text-5xl">
+              <h2 className="font-display text-2xl text-white sm:text-5xl">
                 Ready to start your <span className="shimmer-text italic">wellness journey?</span>
               </h2>
-              <p className="mx-auto mt-4 max-w-md text-white/70">
+              <p className="mx-auto mt-3 max-w-md text-sm text-white/70 sm:mt-4 sm:text-base">
                 Order today, pay on delivery. Delivered across Pakistan.
               </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:justify-center sm:gap-4">
                 <Link
                   href="/shop"
                   className="btn-gold pulse-ring rounded-full bg-[var(--color-gold)] px-8 py-4 font-medium text-[var(--color-forest-deep)]"
