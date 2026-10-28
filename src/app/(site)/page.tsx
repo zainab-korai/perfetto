@@ -1,16 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  ChevronDown,
-  Leaf,
-  MessageCircle,
-  ShieldCheck,
-  Truck,
-  Users,
-} from "lucide-react";
+import { ChevronDown, Leaf, MessageCircle, ShieldCheck, Truck, Users } from "lucide-react";
 import HomeShowcase from "@/components/home/HomeShowcase";
 import CategoryIcons from "@/components/home/CategoryIcons";
+import ParallaxShowcase from "@/components/home/ParallaxShowcase";
+import ReviewsSection from "@/components/home/ReviewsSection";
 import { getAllProducts } from "@/lib/products";
 import { categories } from "@/lib/categories";
 import { effectivePrice, formatPKR } from "@/lib/format";
@@ -18,27 +12,6 @@ import { FLAT_SHIPPING, SITE, whatsappLink } from "@/lib/site";
 
 // Homepage cache hota hai aur har 5 minute baad refresh. Isi se site fast khulti hai.
 export const revalidate = 300;
-
-/* ==========================================================
-   REAL CUSTOMER REVIEWS
-   Sirf asli reviews yahan daalo (customer ki ijazat se).
-   Jab tak ye list khali hai, reviews section homepage pe nahi dikhega.
-
-   Format:
-   { name: "Customer ka naam", city: "Lahore", product: "Hair Oil",
-     text: "Customer ne jo likha", image: "/reviews/1.jpg" },
-
-   - text ya image, dono mein se ek ya dono de sakti ho.
-   - image: WhatsApp chat ka screenshot, file public/reviews/ folder mein rakho.
-   ========================================================== */
-type Review = {
-  name: string;
-  city: string;
-  product?: string;
-  text?: string;
-  image?: string;
-};
-const REVIEWS: Review[] = [];
 
 const FAQS = [
   {
@@ -62,9 +35,22 @@ const FAQS = [
 export default async function Home() {
   const products = await getAllProducts();
 
-  const featured = products.filter((p) => p.featured);
-  const spot = featured[0] ?? products[0];
-  const heroProducts = (featured.length ? featured : products).slice(0, 3);
+  const pool = products.filter((p) => p.featured);
+  const base = pool.length ? pool : products;
+  const heroProducts = base.slice(0, 3);
+
+  // Parallax section ke liye: 1 bada + 2 side products
+  const mainP = base[0];
+  const sideP = base.filter((p) => p.slug !== mainP?.slug).slice(0, 2);
+  const toParallax = (p: (typeof products)[number]) => ({
+    slug: p.slug,
+    name: p.name,
+    tagline: p.tagline,
+    image: p.images[0] ?? "",
+    price: formatPKR(effectivePrice(p)),
+    oldPrice: p.salePrice && p.salePrice < p.price ? formatPKR(p.price) : undefined,
+    highlights: (p.highlights ?? []).slice(0, 3),
+  });
 
   // Client component ko sirf zaroori data bhejte hain (page halka rehta hai)
   const slim = products.map((p) => ({
@@ -138,7 +124,7 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Product fan (sirf bade screen pe, mobile pe load nahi hota) */}
+          {/* Product fan (sirf bade screen pe) */}
           {heroProducts.length > 0 && (
             <div className="relative mx-auto hidden h-[420px] w-full max-w-[440px] lg:block">
               {heroProducts.map((p, i) => {
@@ -155,13 +141,7 @@ export default async function Home() {
                   >
                     <div className="relative aspect-[3/4]">
                       {p.images[0] && (
-                        <Image
-                          src={p.images[0]}
-                          alt={p.name}
-                          fill
-                          sizes="200px"
-                          className="object-cover"
-                        />
+                        <Image src={p.images[0]} alt={p.name} fill sizes="200px" className="object-cover" />
                       )}
                     </div>
                     <p className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-2 pt-8 text-center text-xs font-medium text-white">
@@ -216,9 +196,14 @@ export default async function Home() {
         <HomeShowcase products={slim} tabs={tabs} />
       </section>
 
+      {/* ============ PARALLAX PRODUCT SHOWCASE ============ */}
+      {mainP && mainP.images[0] && (
+        <ParallaxShowcase main={toParallax(mainP)} side={sideP.filter((p) => p.images[0]).map(toParallax)} />
+      )}
+
       {/* ================= BUNDLES ================= */}
       {bundles.length > 0 && (
-        <section className="mt-20 bg-[var(--color-sage)] py-16">
+        <section className="bg-[var(--color-sage)] py-16">
           <div className="container-px mx-auto max-w-7xl">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">
               Best Value
@@ -269,54 +254,6 @@ export default async function Home() {
         </section>
       )}
 
-      {/* ============== EDITOR'S PICK ============== */}
-      {spot && (
-        <section className="container-px mx-auto max-w-7xl pt-20">
-          <div className="grid overflow-hidden rounded-3xl bg-[var(--color-forest-deep)] lg:grid-cols-2">
-            <div className="relative aspect-[4/3] lg:aspect-auto lg:min-h-[420px]">
-              {spot.images[0] && (
-                <Image
-                  src={spot.images[0]}
-                  alt={spot.name}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 600px"
-                  className="object-cover"
-                />
-              )}
-            </div>
-            <div className="flex flex-col justify-center p-7 sm:p-12">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold-light)]">
-                Editor&apos;s Pick
-              </p>
-              <h2 className="font-display mt-3 text-4xl text-white">{spot.name}</h2>
-              <p className="mt-3 text-white/70">{spot.tagline}</p>
-              {(spot.highlights ?? []).length > 0 && (
-                <ul className="mt-5 space-y-2 text-sm text-white/80">
-                  {spot.highlights.slice(0, 4).map((h) => (
-                    <li key={h} className="flex items-start gap-2">
-                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-gold)]" />
-                      {h}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <div className="mt-6 flex items-baseline gap-3">
-                <span className="text-2xl font-semibold text-white">{formatPKR(effectivePrice(spot))}</span>
-                {spot.salePrice && spot.salePrice < spot.price && (
-                  <span className="text-white/40 line-through">{formatPKR(spot.price)}</span>
-                )}
-              </div>
-              <Link
-                href={`/product/${spot.slug}`}
-                className="btn-gold mt-7 inline-flex w-fit items-center gap-2 rounded-full bg-[var(--color-gold)] px-8 py-4 font-medium text-[var(--color-forest-deep)]"
-              >
-                Shop This Formula <ArrowRight size={18} />
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* ============== HOW TO ORDER ============== */}
       <section className="container-px mx-auto max-w-7xl pt-20">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">
@@ -343,44 +280,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ============== REAL REVIEWS (sirf tab dikhega jab REVIEWS mein data ho) ============== */}
-      {REVIEWS.length > 0 && (
-        <section className="container-px mx-auto max-w-7xl pt-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">
-            Customer Words
-          </p>
-          <h2 className="font-display mb-8 mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
-            What Our Customers Say
-          </h2>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {REVIEWS.map((r, i) => (
-              <figure
-                key={i}
-                className="overflow-hidden rounded-2xl border border-[var(--color-sage-2)] bg-white"
-              >
-                {r.image && (
-                  <div className="relative aspect-[3/4] bg-[var(--color-sage)]">
-                    <Image
-                      src={r.image}
-                      alt={`Review from ${r.name}`}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 400px"
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-                <figcaption className="p-5">
-                  {r.text && <p className="text-[var(--color-ink)]/80">&ldquo;{r.text}&rdquo;</p>}
-                  <p className="mt-3 text-sm font-semibold text-[var(--color-forest)]">
-                    {r.name}, {r.city}
-                  </p>
-                  {r.product && <p className="text-xs text-[var(--color-ink)]/50">Used: {r.product}</p>}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-      )}
+      {/* ============== REAL REVIEWS (lib/reviews.ts se) ============== */}
+      <ReviewsSection />
 
       {/* ================= FAQ ================= */}
       <section className="container-px mx-auto max-w-3xl pt-20">
