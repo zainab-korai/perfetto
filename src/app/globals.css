@@ -114,3 +114,59 @@ html {
     transition-duration: 0.01ms !important;
   }
 }
+/* ================= Perfetto animations ================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: opacity, transform;
+}
+.reveal-left { transform: translateX(-40px); }
+.reveal-right { transform: translateX(40px); }
+.reveal-scale { transform: scale(0.92); }
+.reveal.is-in { opacity: 1; transform: none; }
+
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: none; }
+}
+.hero-in {
+  opacity: 0;
+  animation: hero-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+.animate-float { animation: float-y 6s ease-in-out infinite; }
+
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.15); }
+  66% { transform: translate(-30px, 30px) scale(0.92); }
+}
+.animate-blob { animation: blob 14s ease-in-out infinite; }
+
+@keyframes shimmer { to { background-position: 200% center; } }
+.shimmer-text {
+  background: linear-gradient(90deg, #c9a227, #f3dc8b, #e4c766, #fff3c4, #c9a227);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 5s linear infinite;
+}
+
+@keyframes ring {
+  0% { box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.55); }
+  100% { box-shadow: 0 0 0 18px rgba(201, 162, 39, 0); }
+}
+.pulse-ring { animation: ring 2s ease-out infinite; }
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.14) rotate(-5deg); }
+  100% { transform: scale(1); }
+}
+.icon-tile:hover svg { animation: pop 0.5s ease; }

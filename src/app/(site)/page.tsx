@@ -5,6 +5,8 @@ import HomeShowcase from "@/components/home/HomeShowcase";
 import CategoryIcons from "@/components/home/CategoryIcons";
 import ParallaxShowcase from "@/components/home/ParallaxShowcase";
 import ReviewsSection from "@/components/home/ReviewsSection";
+import Reveal from "@/components/home/Reveal";
+import CountUp from "@/components/home/CountUp";
 import { getAllProducts } from "@/lib/products";
 import { categories } from "@/lib/categories";
 import { effectivePrice, formatPKR } from "@/lib/format";
@@ -12,6 +14,15 @@ import { FLAT_SHIPPING, SITE, whatsappLink } from "@/lib/site";
 
 // Homepage cache hota hai aur har 5 minute baad refresh. Isi se site fast khulti hai.
 export const revalidate = 300;
+
+const MARQUEE = [
+  "100% Organic Herbal Formulas",
+  "Cash on Delivery Nationwide",
+  `Trusted by ${SITE.familiesServed} Families`,
+  `${SITE.yearsInBusiness} Years of Herbal Wellness`,
+  "Fast, Discreet Delivery",
+  "No Harmful Chemicals",
+];
 
 const FAQS = [
   {
@@ -32,6 +43,12 @@ const FAQS = [
   },
 ];
 
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">{children}</p>
+  );
+}
+
 export default async function Home() {
   const products = await getAllProducts();
 
@@ -39,7 +56,7 @@ export default async function Home() {
   const base = pool.length ? pool : products;
   const heroProducts = base.slice(0, 3);
 
-  // Parallax section ke liye: 1 bada + 2 side products
+  // Parallax section: 1 bada + 2 side products
   const mainP = base[0];
   const sideP = base.filter((p) => p.slug !== mainP?.slug).slice(0, 2);
   const toParallax = (p: (typeof products)[number]) => ({
@@ -52,7 +69,7 @@ export default async function Home() {
     highlights: (p.highlights ?? []).slice(0, 3),
   });
 
-  // Client component ko sirf zaroori data bhejte hain (page halka rehta hai)
+  // Client component ko sirf zaroori data bhejte hain
   const slim = products.map((p) => ({
     slug: p.slug,
     name: p.name,
@@ -68,7 +85,6 @@ export default async function Home() {
 
   const tabs = categories.map((c) => ({ slug: c.slug, name: c.name, blurb: c.blurb }));
 
-  // Bundles: jin products pe sale hai, sabse zyada bachat wale pehle
   const bundles = products
     .filter((p) => p.salePrice && p.salePrice < p.price)
     .sort((a, b) => b.price - b.salePrice! - (a.price - a.salePrice!))
@@ -81,6 +97,15 @@ export default async function Home() {
     { icon: ShieldCheck, title: "Safety First", text: "Consistent batches" },
   ];
 
+  const familiesNum = parseInt(SITE.familiesServed.replace(/[^0-9]/g, ""), 10) || 0;
+  const yearsNum = parseInt(SITE.yearsInBusiness.replace(/[^0-9]/g, ""), 10) || 0;
+  const stats = [
+    { end: familiesNum, suffix: "+", label: "Families Served" },
+    { end: yearsNum, suffix: "+", label: "Years of Trust" },
+    { end: products.length, suffix: "", label: "Herbal Formulas" },
+    { end: categories.length, suffix: "", label: "Wellness Concerns" },
+  ];
+
   const steps = [
     { n: "1", title: "Choose your product", text: "Pick by concern or browse the best sellers." },
     { n: "2", title: "Place your order", text: "Add to cart and enter your address. Takes one minute." },
@@ -91,25 +116,44 @@ export default async function Home() {
     <>
       {/* ================= HERO ================= */}
       <section className="relative overflow-hidden bg-[var(--color-forest-deep)]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_15%,rgba(201,162,39,0.28),transparent_42%),radial-gradient(circle_at_88%_80%,rgba(20,80,60,0.6),transparent_50%)]" />
-        <div className="container-px relative mx-auto grid max-w-7xl items-center gap-10 pb-16 pt-14 sm:pt-20 lg:grid-cols-[1.1fr_0.9fr] lg:pb-20">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_15%,rgba(201,162,39,0.2),transparent_42%),radial-gradient(circle_at_88%_80%,rgba(20,80,60,0.6),transparent_50%)]" />
+        {/* Tairte hue glow blobs */}
+        <div className="animate-blob pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-[var(--color-gold)]/20 blur-3xl" />
+        <div
+          className="animate-blob pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-emerald-400/15 blur-3xl"
+          style={{ animationDelay: "-6s" }}
+        />
+
+        <div className="container-px relative mx-auto grid max-w-7xl items-center gap-10 pb-20 pt-14 sm:pt-20 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="text-center lg:text-left">
-            <p className="mb-5 inline-block rounded-full border border-[var(--color-gold)]/40 bg-white/5 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-[var(--color-gold-light)]">
+            <p
+              className="hero-in mb-5 inline-block rounded-full border border-[var(--color-gold)]/40 bg-white/5 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-[var(--color-gold-light)]"
+              style={{ animationDelay: "100ms" }}
+            >
               Trusted by {SITE.familiesServed} Families
             </p>
-            <h1 className="font-display text-5xl leading-[1.05] text-white sm:text-6xl lg:text-7xl">
+            <h1
+              className="hero-in font-display text-5xl leading-[1.05] text-white sm:text-6xl lg:text-7xl"
+              style={{ animationDelay: "250ms" }}
+            >
               Herbal Wellness,
               <br />
-              <span className="text-gradient-gold italic">Perfected.</span>
+              <span className="shimmer-text italic">Perfected.</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-md text-lg text-white/70 lg:mx-0">
+            <p
+              className="hero-in mx-auto mt-6 max-w-md text-lg text-white/70 lg:mx-0"
+              style={{ animationDelay: "420ms" }}
+            >
               Chemical-free herbal formulas for weight, hair, skin, height and more, made for real
               concerns.
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
+            <div
+              className="hero-in mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start"
+              style={{ animationDelay: "580ms" }}
+            >
               <Link
                 href="/shop"
-                className="btn-gold rounded-full bg-[var(--color-gold)] px-8 py-4 font-medium text-[var(--color-forest-deep)] transition-transform hover:-translate-y-0.5"
+                className="btn-gold pulse-ring rounded-full bg-[var(--color-gold)] px-8 py-4 font-medium text-[var(--color-forest-deep)] transition-transform hover:-translate-y-0.5"
               >
                 Shop Now
               </Link>
@@ -124,25 +168,27 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Product fan (sirf bade screen pe) */}
+          {/* Product fan + floating chips (sirf bade screen pe) */}
           {heroProducts.length > 0 && (
-            <div className="relative mx-auto hidden h-[420px] w-full max-w-[440px] lg:block">
+            <div className="hero-in relative mx-auto hidden h-[430px] w-full max-w-[460px] lg:block" style={{ animationDelay: "500ms" }}>
               {heroProducts.map((p, i) => {
                 const pos = [
-                  "left-[4%] top-[14%] -rotate-6 z-10",
-                  "left-[30%] top-0 rotate-3 z-20",
-                  "left-[52%] top-[26%] rotate-6 z-10",
+                  "left-[2%] top-[16%] -rotate-6 z-10",
+                  "left-[28%] top-[2%] rotate-3 z-20",
+                  "left-[54%] top-[28%] rotate-6 z-10",
                 ][i];
                 return (
                   <Link
                     key={p.slug}
                     href={`/product/${p.slug}`}
-                    className={`absolute w-[46%] overflow-hidden rounded-2xl border border-white/15 bg-white/10 shadow-2xl transition-transform duration-300 hover:-translate-y-2 hover:rotate-0 ${pos}`}
+                    className={`absolute w-[46%] overflow-hidden rounded-2xl border border-white/15 bg-white/10 shadow-2xl transition-transform duration-300 hover:scale-105 hover:rotate-0 ${pos}`}
                   >
-                    <div className="relative aspect-[3/4]">
-                      {p.images[0] && (
-                        <Image src={p.images[0]} alt={p.name} fill sizes="200px" className="object-cover" />
-                      )}
+                    <div className="animate-float" style={{ animationDelay: `${-i * 1.7}s` }}>
+                      <div className="relative aspect-[3/4]">
+                        {p.images[0] && (
+                          <Image src={p.images[0]} alt={p.name} fill sizes="200px" className="object-cover" />
+                        )}
+                      </div>
                     </div>
                     <p className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-2 pt-8 text-center text-xs font-medium text-white">
                       {p.name}
@@ -150,50 +196,83 @@ export default async function Home() {
                   </Link>
                 );
               })}
+              <div
+                className="animate-float absolute -left-4 bottom-4 z-30 flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-[var(--color-forest)] shadow-xl"
+                style={{ animationDelay: "-2s" }}
+              >
+                <Truck size={14} /> Cash on Delivery
+              </div>
+              <div
+                className="animate-float absolute -right-2 top-2 z-30 flex items-center gap-2 rounded-full bg-[var(--color-gold)] px-4 py-2 text-xs font-semibold text-[var(--color-forest-deep)] shadow-xl"
+                style={{ animationDelay: "-4s" }}
+              >
+                <Users size={14} /> {SITE.familiesServed} Families
+              </div>
             </div>
           )}
         </div>
       </section>
 
+      {/* ================= MARQUEE ================= */}
+      <div className="overflow-hidden border-y border-white/10 bg-[var(--color-forest-deep)] py-3">
+        <div className="marquee-track">
+          {[...MARQUEE, ...MARQUEE].map((m, i) => (
+            <span
+              key={i}
+              className="mx-6 flex items-center gap-3 whitespace-nowrap text-sm tracking-wide text-white/70"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-gold)]" />
+              {m}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* ============ SHOP BY CONCERN (ICON GRID) ============ */}
       <section className="container-px mx-auto max-w-7xl pt-16">
-        <div className="mb-10 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">
-            Shop by Concern
-          </p>
-          <h2 className="font-display mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
-            Find What Your Body Needs
-          </h2>
-        </div>
-        <CategoryIcons />
+        <Reveal>
+          <div className="mb-10 text-center">
+            <Eyebrow>Shop by Concern</Eyebrow>
+            <h2 className="font-display mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
+              Find What Your Body Needs
+            </h2>
+          </div>
+        </Reveal>
+        <Reveal delay={100} variant="scale">
+          <CategoryIcons />
+        </Reveal>
       </section>
 
       {/* ================= TRUST ================= */}
       <section className="container-px mx-auto max-w-7xl pt-14">
-        <div className="grid grid-cols-2 gap-5 rounded-3xl border border-[var(--color-sage-2)] bg-white p-6 lg:grid-cols-4">
-          {trust.map(({ icon: Icon, title, text }) => (
-            <div key={title} className="flex items-center gap-3">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--color-sage)] text-[var(--color-forest)]">
-                <Icon size={20} />
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-[var(--color-ink)]">{title}</p>
-                <p className="text-xs text-[var(--color-ink)]/55">{text}</p>
+        <Reveal>
+          <div className="grid grid-cols-2 gap-5 rounded-3xl border border-[var(--color-sage-2)] bg-white p-6 lg:grid-cols-4">
+            {trust.map(({ icon: Icon, title, text }) => (
+              <div key={title} className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--color-sage)] text-[var(--color-forest)]">
+                  <Icon size={20} />
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-[var(--color-ink)]">{title}</p>
+                  <p className="text-xs text-[var(--color-ink)]/55">{text}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Reveal>
       </section>
 
       {/* ============ PRODUCTS WITH TABS ============ */}
       <section className="container-px mx-auto max-w-7xl pt-20">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">
-          Browse Products
-        </p>
-        <h2 className="font-display mb-8 mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
-          Best Sellers & More
-        </h2>
-        <HomeShowcase products={slim} tabs={tabs} />
+        <Reveal>
+          <Eyebrow>Browse Products</Eyebrow>
+          <h2 className="font-display mb-8 mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
+            Best Sellers & More
+          </h2>
+        </Reveal>
+        <Reveal delay={100}>
+          <HomeShowcase products={slim} tabs={tabs} />
+        </Reveal>
       </section>
 
       {/* ============ PARALLAX PRODUCT SHOWCASE ============ */}
@@ -205,22 +284,22 @@ export default async function Home() {
       {bundles.length > 0 && (
         <section className="bg-[var(--color-sage)] py-16">
           <div className="container-px mx-auto max-w-7xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">
-              Best Value
-            </p>
-            <h2 className="font-display mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
-              Bundles & Courses, Bigger Savings
-            </h2>
-            <p className="mt-2 max-w-xl text-[var(--color-ink)]/60">
-              Complete courses at a special price. The smart way to stay consistent.
-            </p>
+            <Reveal>
+              <Eyebrow>Best Value</Eyebrow>
+              <h2 className="font-display mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
+                Bundles & Courses, Bigger Savings
+              </h2>
+              <p className="mt-2 max-w-xl text-[var(--color-ink)]/60">
+                Complete courses at a special price. The smart way to stay consistent.
+              </p>
+            </Reveal>
 
             <div className="-mx-5 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
               {bundles.map((p) => (
                 <Link
                   key={p.slug}
                   href={`/product/${p.slug}`}
-                  className="group w-[260px] shrink-0 snap-start overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-xl sm:w-[280px]"
+                  className="group w-[260px] shrink-0 snap-start overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl sm:w-[280px]"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-[var(--color-cream-2)]">
                     <span className="absolute left-3 top-3 z-10 rounded-full bg-[var(--color-forest)] px-3 py-1 text-[11px] font-bold uppercase text-white">
@@ -232,7 +311,7 @@ export default async function Home() {
                         alt={p.name}
                         fill
                         sizes="280px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     )}
                   </div>
@@ -254,91 +333,114 @@ export default async function Home() {
         </section>
       )}
 
+      {/* ============== COUNTING NUMBERS ============== */}
+      <section className="container-px mx-auto max-w-7xl pt-20">
+        <Reveal variant="scale">
+          <div className="relative overflow-hidden rounded-3xl bg-[var(--color-forest)] px-6 py-12 sm:px-12">
+            <div className="animate-blob pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-[var(--color-gold)]/20 blur-3xl" />
+            <div className="relative grid grid-cols-2 gap-8 text-center lg:grid-cols-4">
+              {stats.map((s) => (
+                <div key={s.label}>
+                  <p className="font-display text-4xl text-[var(--color-gold-light)] sm:text-5xl">
+                    <CountUp end={s.end} suffix={s.suffix} />
+                  </p>
+                  <p className="mt-2 text-sm text-white/70">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
       {/* ============== HOW TO ORDER ============== */}
       <section className="container-px mx-auto max-w-7xl pt-20">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">
-          Easy Ordering
-        </p>
-        <h2 className="font-display mb-8 mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
-          Order in 3 Simple Steps
-        </h2>
+        <Reveal>
+          <Eyebrow>Easy Ordering</Eyebrow>
+          <h2 className="font-display mb-8 mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
+            Order in 3 Simple Steps
+          </h2>
+        </Reveal>
         <div className="grid gap-4 md:grid-cols-3">
-          {steps.map((s) => (
-            <div
-              key={s.n}
-              className="flex items-start gap-4 rounded-2xl border border-[var(--color-sage-2)] bg-white p-6"
-            >
-              <span className="font-display flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-forest)] text-xl text-[var(--color-gold-light)]">
-                {s.n}
-              </span>
-              <div>
-                <h3 className="font-display text-lg text-[var(--color-ink)]">{s.title}</h3>
-                <p className="mt-1 text-sm text-[var(--color-ink)]/60">{s.text}</p>
+          {steps.map((s, i) => (
+            <Reveal key={s.n} delay={i * 140}>
+              <div className="flex h-full items-start gap-4 rounded-2xl border border-[var(--color-sage-2)] bg-white p-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg">
+                <span className="font-display flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-forest)] text-xl text-[var(--color-gold-light)]">
+                  {s.n}
+                </span>
+                <div>
+                  <h3 className="font-display text-lg text-[var(--color-ink)]">{s.title}</h3>
+                  <p className="mt-1 text-sm text-[var(--color-ink)]/60">{s.text}</p>
+                </div>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
 
-      {/* ============== REAL REVIEWS (lib/reviews.ts se) ============== */}
+      {/* ============== REAL REVIEWS (lib/reviews.ts se, khali ho to nahi dikhta) ============== */}
       <ReviewsSection />
 
       {/* ================= FAQ ================= */}
       <section className="container-px mx-auto max-w-3xl pt-20">
-        <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">
-          Good to Know
-        </p>
-        <h2 className="font-display mb-8 mt-2 text-center text-3xl text-[var(--color-ink)] sm:text-4xl">
-          Common Questions
-        </h2>
+        <Reveal>
+          <div className="mb-8 text-center">
+            <Eyebrow>Good to Know</Eyebrow>
+            <h2 className="font-display mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">Common Questions</h2>
+          </div>
+        </Reveal>
         <div className="space-y-3">
-          {FAQS.map((f) => (
-            <details
-              key={f.q}
-              className="group rounded-2xl border border-[var(--color-sage-2)] bg-white px-5 py-4"
-            >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-[var(--color-ink)] [&::-webkit-details-marker]:hidden">
-                {f.q}
-                <ChevronDown
-                  size={18}
-                  className="shrink-0 text-[var(--color-forest)] transition-transform group-open:rotate-180"
-                />
-              </summary>
-              <p className="mt-3 text-sm leading-relaxed text-[var(--color-ink)]/65">{f.a}</p>
-            </details>
+          {FAQS.map((f, i) => (
+            <Reveal key={f.q} delay={i * 80}>
+              <details className="group rounded-2xl border border-[var(--color-sage-2)] bg-white px-5 py-4 transition-shadow open:shadow-md">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-[var(--color-ink)] [&::-webkit-details-marker]:hidden">
+                  {f.q}
+                  <ChevronDown
+                    size={18}
+                    className="shrink-0 text-[var(--color-forest)] transition-transform group-open:rotate-180"
+                  />
+                </summary>
+                <p className="mt-3 text-sm leading-relaxed text-[var(--color-ink)]/65">{f.a}</p>
+              </details>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* ================= FINAL CTA ================= */}
       <section className="container-px mx-auto mt-20 max-w-7xl">
-        <div className="relative overflow-hidden rounded-3xl bg-[var(--color-forest-deep)] px-6 py-14 text-center sm:px-12">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(201,162,39,0.25),transparent_50%)]" />
-          <div className="relative">
-            <h2 className="font-display text-3xl text-white sm:text-4xl">
-              Ready to start your wellness journey?
-            </h2>
-            <p className="mx-auto mt-4 max-w-md text-white/70">
-              Order today, pay on delivery. Delivered across Pakistan.
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <Link
-                href="/shop"
-                className="btn-gold rounded-full bg-[var(--color-gold)] px-8 py-4 font-medium text-[var(--color-forest-deep)]"
-              >
-                Start Shopping
-              </Link>
-              <a
-                href={whatsappLink("Hi Perfetto! I'd like to know more about your products.")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-full border border-white/25 px-8 py-4 font-medium text-white hover:bg-white/10"
-              >
-                Chat on WhatsApp
-              </a>
+        <Reveal variant="scale">
+          <div className="relative overflow-hidden rounded-3xl bg-[var(--color-forest-deep)] px-6 py-16 text-center sm:px-12">
+            <div className="animate-blob pointer-events-none absolute -left-10 top-0 h-60 w-60 rounded-full bg-[var(--color-gold)]/20 blur-3xl" />
+            <div
+              className="animate-blob pointer-events-none absolute -right-10 bottom-0 h-60 w-60 rounded-full bg-emerald-400/15 blur-3xl"
+              style={{ animationDelay: "-7s" }}
+            />
+            <div className="relative">
+              <h2 className="font-display text-3xl text-white sm:text-5xl">
+                Ready to start your <span className="shimmer-text italic">wellness journey?</span>
+              </h2>
+              <p className="mx-auto mt-4 max-w-md text-white/70">
+                Order today, pay on delivery. Delivered across Pakistan.
+              </p>
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <Link
+                  href="/shop"
+                  className="btn-gold pulse-ring rounded-full bg-[var(--color-gold)] px-8 py-4 font-medium text-[var(--color-forest-deep)]"
+                >
+                  Start Shopping
+                </Link>
+                <a
+                  href={whatsappLink("Hi Perfetto! I'd like to know more about your products.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-white/25 px-8 py-4 font-medium text-white hover:bg-white/10"
+                >
+                  Chat on WhatsApp
+                </a>
+              </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       </section>
     </>
   );
