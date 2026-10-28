@@ -10,6 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import HomeShowcase from "@/components/home/HomeShowcase";
+import CategoryIcons from "@/components/home/CategoryIcons";
 import { getAllProducts } from "@/lib/products";
 import { categories } from "@/lib/categories";
 import { effectivePrice, formatPKR } from "@/lib/format";
@@ -105,7 +106,7 @@ export default async function Home() {
       {/* ================= HERO ================= */}
       <section className="relative overflow-hidden bg-[var(--color-forest-deep)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_15%,rgba(201,162,39,0.28),transparent_42%),radial-gradient(circle_at_88%_80%,rgba(20,80,60,0.6),transparent_50%)]" />
-        <div className="container-px relative mx-auto grid max-w-7xl items-center gap-10 pb-24 pt-14 sm:pt-20 lg:grid-cols-[1.1fr_0.9fr] lg:pb-28">
+        <div className="container-px relative mx-auto grid max-w-7xl items-center gap-10 pb-16 pt-14 sm:pt-20 lg:grid-cols-[1.1fr_0.9fr] lg:pb-20">
           <div className="text-center lg:text-left">
             <p className="mb-5 inline-block rounded-full border border-[var(--color-gold)]/40 bg-white/5 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-[var(--color-gold-light)]">
               Trusted by {SITE.familiesServed} Families
@@ -174,29 +175,22 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ============ "I'M LOOKING FOR" QUICK PICKER ============ */}
-      <section className="container-px relative z-10 mx-auto -mt-12 max-w-7xl">
-        <div className="rounded-3xl border border-[var(--color-sage-2)] bg-white p-5 shadow-[0_20px_50px_-20px_rgba(18,61,47,0.35)] sm:p-7">
+      {/* ============ SHOP BY CONCERN (ICON GRID) ============ */}
+      <section className="container-px mx-auto max-w-7xl pt-16">
+        <div className="mb-10 text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">
-            What are you looking for?
+            Shop by Concern
           </p>
-          <div className="mt-4 flex flex-wrap gap-2.5">
-            {categories.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/product-category/${c.slug}`}
-                className="rounded-full bg-[var(--color-sage)] px-5 py-2.5 text-sm font-medium text-[var(--color-forest)] transition-colors hover:bg-[var(--color-forest)] hover:text-white"
-              >
-                {c.name}
-              </Link>
-            ))}
-          </div>
+          <h2 className="font-display mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
+            Find What Your Body Needs
+          </h2>
         </div>
+        <CategoryIcons />
       </section>
 
       {/* ================= TRUST ================= */}
-      <section className="container-px mx-auto max-w-7xl pt-10">
-        <div className="grid grid-cols-2 gap-5 lg:grid-cols-4">
+      <section className="container-px mx-auto max-w-7xl pt-14">
+        <div className="grid grid-cols-2 gap-5 rounded-3xl border border-[var(--color-sage-2)] bg-white p-6 lg:grid-cols-4">
           {trust.map(({ icon: Icon, title, text }) => (
             <div key={title} className="flex items-center gap-3">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--color-sage)] text-[var(--color-forest)]">
@@ -211,13 +205,13 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ============ SHOP BY CONCERN (TABS) ============ */}
+      {/* ============ PRODUCTS WITH TABS ============ */}
       <section className="container-px mx-auto max-w-7xl pt-20">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-gold-deep)]">
-          Shop by Concern
+          Browse Products
         </p>
         <h2 className="font-display mb-8 mt-2 text-3xl text-[var(--color-ink)] sm:text-4xl">
-          Find What Your Body Needs
+          Best Sellers & More
         </h2>
         <HomeShowcase products={slim} tabs={tabs} />
       </section>
